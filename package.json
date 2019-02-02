@@ -1,11 +1,11 @@
 {
-  "name": "kopala",
-  "version": "1.0.0",
+  "name": "skoallo",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "test": "jest --watchAll",
-    "dev": "nodemon app.js"
+    "dev": "nodemon examples/hello/app.js"
   },
   "dependencies": {
     "apollo-server-koa": "^2.3.1",
