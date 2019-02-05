@@ -1,24 +1,17 @@
-const users = {
-  1: {
-    id: '1',
-    username: 'Pedro Infante'
-  },
-  2: {
-    id: '2',
-    username: 'Sylvia Pinal'
-  }
-};
-
-const me = users[1];
-
 module.exports = {
-  me() {
+  me(parent, args, { me }) {
     return me;
   },
-  user(parent, { id }) {
-    return users[id];
+  user(parent, { id }, { models }) {
+    return models.users[id];
   },
-  users() {
-    return Object.values(users);
+  users(parent, args, { models }) {
+    return Object.values(models.users);
+  },
+  messages(parent, args, { models }) {
+    return Object.values(models.messages);
+  },
+  message(parent, { id }, { models }) {
+    return models.messages[id];
   }
 };

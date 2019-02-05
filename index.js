@@ -3,6 +3,7 @@ const { ApolloServer, gql } = require('apollo-server-koa');
 const camelCase = require('lodash.camelcase');
 const path = require('path');
 const fs = require('fs');
+const util = require('util');
 
 const c = str => {
   str = camelCase(str.replace('.js', ''));
@@ -13,6 +14,8 @@ const defaults = {
   schemasDir: 'schemas',
   resolversDir: 'resolvers',
   port: 4000,
+  context: {},
+  debug: false
 };
 
 class Skoallo {
@@ -20,10 +23,14 @@ class Skoallo {
     this.config = { ...defaults, ...options };
     this.rootDir = path.dirname(module.parent.filename);
 
-    const typeDefs = gql`${this._schemas()}`;
-    const resolvers = this._resolvers();
+    this.schemas = this._schemas();
+    this.resolvers = this._resolvers();
 
-    this.server = new ApolloServer({ typeDefs, resolvers });
+    const typeDefs = gql`${this.schemas}`;
+    const resolvers = this.resolvers;
+    const context = this.config.context;
+
+    this.server = new ApolloServer({ typeDefs, resolvers, context });
     this.app = new Koa();
 
     this.server.applyMiddleware({ app: this.app });
@@ -33,6 +40,10 @@ class Skoallo {
     const url = `http://localhost:${this.config.port}`;
     this.app.listen({ port: this.config.port || 4000 }, () => {
       console.log(`🚀 Server ready at ${url}${this.server.graphqlPath}`);
+      if (this.config.debug) {
+        console.log('SCHEMA: ', this.schemas.join("\n"));
+        console.log("RESOLVERS:\n", util.inspect(this.resolvers, false, null));
+      }
     });
   }
 
